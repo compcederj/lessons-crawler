@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from lessons_crawler.dao.subject_dao import SubjectDAO
 
 
-class LessonData:
+class RNPLessonDAO:
     servers = [
         "http://va05-idc.rnp.br/riotransfer",
         "http://va05-idc.rnp.br/riotransfer/cederj/sistemas_comp/ead05018/Aula_001/Aula_001.xml,",
@@ -78,21 +78,21 @@ class LessonData:
     @property
     def __related_lessons_from_soup(self):
         relations = self.__soup.find_all("relation")
-        related_lessons: List[LessonData] = []
+        related_lessons: List[RNPLessonDAO] = []
 
         for relation in relations:
             if relation.find("resource"):
                 lesson_url = relation.resource.identifier.entry.text
                 lesson_path = lesson_url.split("/")[-2]
-                related_lessons.append(LessonData(self.subject_code, lesson_path))
+                related_lessons.append(RNPLessonDAO(self.subject_code, lesson_path))
 
         return related_lessons
 
     @property
     def __related_lessons_from_database(self) -> List:
         subject = SubjectDAO.get_from_code(self.subject_code)
-        related_lessons: List[LessonData] = [
-            LessonData(self.subject_code, f"Aula_{lesson + 1:0>3}")
+        related_lessons: List[RNPLessonDAO] = [
+            RNPLessonDAO(self.subject_code, f"Aula_{lesson + 1:0>3}")
             for lesson in range(1, subject.amount_lessons)
         ]
 
