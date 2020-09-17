@@ -23,3 +23,13 @@ class LessonData(Base):
     updated_at = Column("updated_at", DateTime(), server_default=func.now(), onupdate=func.now())
 
     lesson = relationship(Lesson, backref="LessonData")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return (f"<Subject: "
+                f"id: {self.id}, "
+                f"code: {self.lesson.title}"
+                f">")
