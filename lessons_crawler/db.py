@@ -9,6 +9,8 @@ from sqlalchemy import (
     Integer,
     Time,
     Unicode,
+    Text,
+    JSON,
     create_engine,
     func,
 )
