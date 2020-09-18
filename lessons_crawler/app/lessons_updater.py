@@ -2,7 +2,7 @@ import click
 
 from lessons_crawler.dao.lesson_dao import LessonDAO
 from lessons_crawler.dao.subject_dao import SubjectDAO
-from dao.rnp_lessons_dao import RNPLessonDAO
+from lessons_crawler.dao.rnp_lessons_dao import RNPLessonDAO
 from lessons_crawler.models.subjects import Subject
 
 
