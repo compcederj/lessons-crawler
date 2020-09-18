@@ -2,11 +2,13 @@ import os
 
 from dotenv import load_dotenv
 from sqlalchemy import (
+    JSON,
     Column,
     DateTime,
     Enum,
     ForeignKey,
     Integer,
+    Text,
     Time,
     Unicode,
     create_engine,

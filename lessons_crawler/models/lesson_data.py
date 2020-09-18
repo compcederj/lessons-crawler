@@ -1,107 +1,35 @@
-from typing import Dict, List
-
-import requests
-from bs4 import BeautifulSoup
-
-from lessons_crawler.dao.subject_dao import SubjectDAO
+from lessons_crawler.db import db, Base, Column, Integer, Text, JSON, ForeignKey, DateTime, func, relationship
+from lessons_crawler.models.lessons import Lesson
 
 
-class LessonData:
-    servers = [
-        "http://va05-idc.rnp.br/riotransfer",
-        "http://va05-idc.rnp.br/riotransfer/cederj/sistemas_comp/ead05018/Aula_001/Aula_001.xml,",
-        "http://va10-idc.rnp.br/riotransfer"
-    ]
-    xml_server = servers[0]
-    lesson_base_url = "http://videoaula.rnp.br/v.php?f="
+class LessonData(Base):
+    __tablename__ = "lesson_data"
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    raw_xml = Column("xml_raw_data", Text)
+    json_xml = Column("json_xml", JSON)
+    raw_index = Column("raw_index", Text)
+    json_index = Column("json_index", JSON)
+    raw_sync = Column("raw_sync", Text)
+    json_sync = Column("json_sync", JSON)
 
-    def __init__(self, subject_code: str, lesson_path: str):
-        self.subject_code = subject_code
-        self.lesson_path = lesson_path
-        
-        self.url_path = f"{self.xml_server}/cederj/sistemas_comp/{self.subject_code}/{self.lesson_path}"
-        self.xml_url = f"{self.url_path}/{self.lesson_path}.xml"
-        self.lesson_url = (f"{self.lesson_base_url}/cederj/sistemas_comp/"
-                           f"{self.subject_code}/{self.lesson_path}/{self.lesson_path}.xml")
-        
-        self.__response = requests.get(self.xml_url)
-        self.__data = self.__response.text
-        self.__soup = BeautifulSoup(self.__data, 'lxml')
+    lesson_id = Column(
+        "lesson_id",
+        Integer,
+        ForeignKey("lessons.id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False
+    )
 
-    @property
-    def title(self) -> str:
-        return self.__soup.find("general").find("title").find("string").text
+    created_at = Column("created_at", DateTime(), server_default=func.now())
+    updated_at = Column("updated_at", DateTime(), server_default=func.now(), onupdate=func.now())
 
-    @property
-    def thumbnail(self) -> str:
-        thumbnail = self.__soup.find("videoaula").find("technical").find("thumbnail")
-        if thumbnail:
-            file = thumbnail.entry.text
-            return f"{self.url_path}/{file}"
-        return ""
+    lesson = relationship(Lesson, backref="LessonData")
 
-    @property
-    def __related_media(self) -> Dict[str, str]:
-        elements = self.__soup.find("videoaula").find_all("relatedmedia")
-        related_media = {}
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
-        for element in elements:
-            catalog: str = element.find("catalog").text
-
-            if catalog in ("index", "sync", "video"):
-                file: str = element.entry.text
-
-                if catalog == "video":
-                    file_extension = file.split(".")[-1]
-                    related_media[f"{catalog}_{file_extension}"] = file
-                else:
-                    related_media[catalog] = file
-
-        return related_media
-
-    @property
-    def index(self) -> str:
-        return f"{self.url_path}/{self.__related_media.get('index')}"
-
-    @property
-    def sync(self) -> str:
-        return f"{self.url_path}/{self.__related_media.get('sync')}"
-
-    @property
-    def video_mp4(self) -> str:
-        return f"{self.url_path}/{self.__related_media.get('video_mp4')}"
-
-    @property
-    def video_webm(self) -> str:
-        return f"{self.url_path}/{self.__related_media.get('video_webm')}"
-    
-    @property
-    def __related_lessons_from_soup(self):
-        relations = self.__soup.find_all("relation")
-        related_lessons: List[LessonData] = []
-
-        for relation in relations:
-            if relation.find("resource"):
-                lesson_url = relation.resource.identifier.entry.text
-                lesson_path = lesson_url.split("/")[-2]
-                related_lessons.append(LessonData(self.subject_code, lesson_path))
-
-        return related_lessons
-
-    @property
-    def __related_lessons_from_database(self) -> List:
-        subject = SubjectDAO.get_from_code(self.subject_code)
-        related_lessons: List[LessonData] = [
-            LessonData(self.subject_code, f"Aula_{lesson + 1:0>3}")
-            for lesson in range(1, subject.amount_lessons)
-        ]
-
-        return related_lessons
-    
-    @property
-    def related_lessons(self) -> List:
-        # from_soup = self.__related_lessons_from_soup
-        return self.__related_lessons_from_database
-
-    def exists(self):
-        return self.__response.status_code == 200
+    def __repr__(self):
+        return (f"<Subject: "
+                f"id: {self.id}, "
+                f"code: {self.lesson.title}"
+                f">")

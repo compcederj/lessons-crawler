@@ -14,7 +14,7 @@ readme = ''
 setup(
     long_description=readme,
     name='lessons-crawler',
-    version='0.1.0',
+    version='0.2.0',
     python_requires='==3.*,>=3.8.0',
     author='Thiago da Cunha Borges',
     author_email='thiagoborges@id.uff.br',
@@ -32,12 +32,12 @@ setup(
         'beautifulsoup4==4.*,>=4.9.1', 'click==7.*,>=7.1.2',
         'lxml==4.*,>=4.5.2', 'psycopg2-binary==2.*,>=2.8.6',
         'python-dotenv==0.*,>=0.14.0', 'requests==2.*,>=2.24.0',
-        'sqlalchemy==1.*,>=1.3.19'
+        'sqlalchemy==1.*,>=1.3.19', 'xmltodict==0.*,>=0.12.0'
     ],
     extras_require={
         "dev": [
-            "black==20.*,>=20.8.0.b1", "isort==5.*,>=5.5.2",
-            "pytest==5.*,>=5.2.0"
+            "black==20.*,>=20.8.0.b1", "ipython==7.*,>=7.18.1",
+            "isort==5.*,>=5.5.2", "pytest==5.*,>=5.2.0"
         ]
     },
 )

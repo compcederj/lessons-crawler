@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import List
 
 import click
 
@@ -39,3 +40,8 @@ class LessonDAO:
         lesson.save()
 
         return lesson
+
+    @staticmethod
+    def get_all() -> List[Lesson]:
+        lessons = db.session.query(Lesson).all()
+        return lessons

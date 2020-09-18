@@ -2,7 +2,7 @@ import click
 
 from lessons_crawler.dao.lesson_dao import LessonDAO
 from lessons_crawler.dao.subject_dao import SubjectDAO
-from lessons_crawler.models.lesson_data import LessonData
+from lessons_crawler.dao.rnp_lessons_dao import RNPLessonDAO
 from lessons_crawler.models.subjects import Subject
 
 
@@ -17,7 +17,7 @@ class LessonsUpdater:
             self.create_lessons(subject)
 
     def create_lessons(self, subject: Subject):
-        first_lesson = LessonData(subject.code, self.FIRST_LESSON_PATH)
+        first_lesson = RNPLessonDAO(subject.code, self.FIRST_LESSON_PATH)
         if first_lesson.exists():
             lesson = LessonDAO.create_or_update(
                 subject=subject,

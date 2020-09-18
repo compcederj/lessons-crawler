@@ -347,3 +347,4 @@ Temporary Items
 **/.python-version
 
 **/*.idea/**
+storage/**
