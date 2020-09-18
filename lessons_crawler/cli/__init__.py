@@ -1,6 +1,6 @@
 import click
 
-from app.lesson_download_files import LessonDownloadFiles
+from lessons_crawler.app.lesson_download_files import LessonDownloadFiles
 from lessons_crawler.app.lesson_data_updater import LessonDataUpdater
 from lessons_crawler.app.lessons_updater import LessonsUpdater
 

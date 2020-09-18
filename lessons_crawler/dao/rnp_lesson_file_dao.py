@@ -5,7 +5,7 @@ import click
 import requests
 from requests import Response
 
-from dao.lesson_data_dao import LessonDataDAO
+from lessons_crawler.dao.lesson_data_dao import LessonDataDAO
 from lessons_crawler.helpers import strip_accents
 from lessons_crawler.models.lessons import Lesson
 
