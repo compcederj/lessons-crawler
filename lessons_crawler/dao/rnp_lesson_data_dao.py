@@ -2,8 +2,8 @@ from collections import OrderedDict
 
 import requests
 
-from helpers.xml_parser import XMLParser
-from models.lessons import Lesson
+from lessons_crawler.helpers.xml_parser import XMLParser
+from lessons_crawler.models.lessons import Lesson
 
 
 class RNPLessonDataDAO:
